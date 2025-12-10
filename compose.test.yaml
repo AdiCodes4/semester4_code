@@ -1,0 +1,11 @@
+name: generator-test
+
+services:
+
+  generator-test-api:
+    build:
+      context: .
+      dockerfile: 'Dockerfile.test'
+    env_file:
+      - .env
+    container_name: generator-test-api

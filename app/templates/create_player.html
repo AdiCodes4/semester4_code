@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Create Player</h2>
+<form method="POST">
+    <label for="name">Player Name:</label><br>
+    <input type="text" name="name" required><br><br>
+    <label for="tag">Tag Name:</label><br>
+    <input type="text" name="tag" required><br><br>
+    <label for="team">Team:</label><br>
+    <select name="team_id">
+        {% for team in teams %}
+            <option value="{{ team.id }}">{{ team.name }}</option>
+        {% endfor %}
+    </select><br><br>
+    <button type="submit">Add Player</button>
+</form>
+{% endblock %}

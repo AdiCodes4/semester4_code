@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tournament Bracket</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1><a href="{{ url_for('ui.index') }}">🏆 Tournament App</a></h1>
+            <p> |
+                 <a href="{{ url_for('ui.create_tournament') }}">Create Tournament</a> |
+                 <a href="{{ url_for('ui.create_team') }}">Create Team</a> |
+                 <a href="{{ url_for('ui.create_player') }}">Create Player</a> |
+                 <a href="{{ url_for('ui.login_get') }}">Login</a> |
+                 <a href="{{ url_for('ui.register_get') }}">Register</a> |
+                 <a href="{{ url_for('ui.logout') }}">Logout</a> |
+            </p>
+        <hr>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>
+            Tournament App isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.
+        </p>
+    </footer>
+</body>
+</html>

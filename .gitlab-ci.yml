@@ -1,0 +1,68 @@
+stages:          # List of stages for jobs, and their order of execution
+  - test
+  - build
+  - deploy
+
+unit-test-job:
+    stage: test
+    image: python:3.10
+    before_script:
+        - pip install -r requirements.txt
+        - pip install pytest
+    script:
+        - echo "Running unit tests... This will take about 60 seconds."
+        - python -m pytest
+
+build-job:
+    image: docker:cli
+    stage: build
+    services:
+        - docker:dind
+    variables:
+        DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    before_script:
+        - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    # Default branch is tagged with `latest`
+    script:
+        - docker build -f Dockerfile.prod --pull -t "$DOCKER_IMAGE_NAME" .
+        - docker push "$DOCKER_IMAGE_NAME"
+        - docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE:latest"
+        - docker push "$CI_REGISTRY_IMAGE:latest"
+    rules:
+        - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+deploy-job:
+    stage: deploy
+    image: alpine
+    before_script:
+        # install ssh
+        - apk add openssh-client
+    script:
+        # start ssh-agent and import ssh private key
+        - eval `ssh-agent`
+        - ssh-add <(echo "$SSH_PRIVATE_KEY")
+        # add server to list of known hosts
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        - touch ~/.ssh/known_hosts
+        - chmod 600 ~/.ssh/known_hosts
+        - ssh-keyscan -H $DEPLOY_TARGET >> ~/.ssh/known_hosts
+        - echo "HOST *" > ~/.ssh/config
+        # upload docker-compose file to the server
+        - scp compose.prod.yaml $DEPLOY_TARGET_USER@$DEPLOY_TARGET:/home/$DEPLOY_TARGET_USER/compose_blueprint_flask.yaml
+        # pull newest images from registry and start them
+        - ssh $DEPLOY_TARGET_USER@$DEPLOY_TARGET "cd /home/$DEPLOY_TARGET_USER;
+            sed -i '/^FLASK_BLUEPRINT_IMAGE=/d' .env;
+            echo \"FLASK_BLUEPRINT_IMAGE=$CI_REGISTRY_IMAGE:latest\" >> .env || exit 1;
+            sed -i '/^DB_ROOT_PASSWORD=/d' .env;
+            echo \"DB_ROOT_PASSWORD=$DB_ROOT_PASSWORD\" >> .env || exit 1;
+            sed -i '/^RIOT_API_KEY=/d' .env;
+            echo \"RIOT_API_KEY=$RIOT_API_KEY\" >> .env || exit 1;
+            docker login -u $CI_REGISTRY_USER 
+                -p $CI_REGISTRY_PASSWORD $CI_REGISTRY;
+            docker compose -f compose_blueprint_flask.yaml pull;
+            docker compose -f compose_blueprint_flask.yaml up -d"
+    rules:
+        # only deploy if new commit on main-branch
+        - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+

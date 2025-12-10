@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Team: {{ team.name }}</h2>
+  <p><strong>ID:</strong> {{ team.id }}</p>
+
+  <h3>Players:</h3>
+  {% if team.players %}
+    <ul>
+      {% for player in team.players %}
+        <li><a href="{{ url_for('ui.view_player', player_id=player.id) }}">{{ player.summoner_name }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No players in this team.</p>
+  {% endif %}
+
+  <p><a href="{{ url_for('ui.index') }}">← Back to main</a></p>
+{% endblock %}

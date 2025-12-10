@@ -1,0 +1,12 @@
+__pycache__
+app.db
+.env
+riot_api_key.txt
+env-configmap.yaml
+generator-prod-api-deployment.yaml
+generator-prod-api-service.yaml
+generator-prod-db-deployment.yaml
+generator-prod-db-service.yaml
+generator-prod-api-cm0-configmap.yaml
+generator-prod-db-persistentvolumeclaim.yaml 
+kustomization.yaml

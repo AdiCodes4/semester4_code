@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Create Bracket</h2>
+
+<form method="POST" action="{{ url_for('ui.create_bracket') }}">
+  <label for="tournament_id">Select Tournament:</label>
+  <select name="tournament_id" id="tournament_id" required>
+    {% for tournament in tournaments %}
+      <option value="{{ tournament.id }}">{{ tournament.name }}</option>
+    {% endfor %}
+  </select>
+
+  <button type="submit">Generate Bracket</button>
+</form>
+
+{% if tournaments|length == 0 %}
+  <p>No tournaments available. <a href="{{ url_for('ui.create_tournament') }}">Create one here</a>.</p>
+{% endif %}
+{% endblock %}

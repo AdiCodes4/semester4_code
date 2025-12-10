@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Player: {{ player.summoner_name }}</h2>
+  <p><strong>ID:</strong> {{ player.id }}</p>
+  <p><strong>Tag:</strong> {{ player.tag }}</p>
+  <p><strong>Level:</strong> {{ player.summoner_level }}</p>
+
+
+  <p><strong>Current Team:</strong> 
+    {% if player.team %}
+      <a href="{{ url_for('ui.view_team', team_id=player.team.id) }}">{{ player.team.name }}</a>
+    {% else %}
+      No Team
+    {% endif %}
+  </p>
+
+  <form method="post" action="{{ url_for('ui.change_team', player_id=player.id) }}">
+    <label for="team_id">Change Team:</label>
+    <select name="team_id" id="team_id">
+      <option value="">-- No Team --</option>
+      {% for team in teams %}
+        <option value="{{ team.id }}">
+          {{ team.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <button type="submit">Change</button>
+  </form>
+  <p><a href="{{ url_for('ui.index') }}">← Back to main</a></p>
+{% endblock %}

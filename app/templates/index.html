@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Available Tournaments</h2>
+<ul>
+    {% for tournament in tournaments %}
+        <li><a href="{{ url_for('ui.manage_tournament_teams', tournament_id=tournament.id) }}">{{ tournament.name }}</a></li>
+    {% endfor %}
+</ul>
+<h2>Teams</h2>
+<ul>
+    {% for team in teams %}
+        <li><a href="{{ url_for('ui.view_team', team_id=team.id) }}">{{ team.name }}</a></li>
+    {% endfor %}
+</table>
+</ul>
+<h2>Players</h2>
+<ul>
+    {% for player in players %}
+        <li><a href="{{ url_for('ui.view_player', player_id=player.id) }}">{{ player.summoner_name }}</a></li>
+    {% endfor %}
+</ul>
+    
+{% endblock %}
