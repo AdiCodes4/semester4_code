@@ -6,7 +6,7 @@ stages:
 variables:
   DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
   INFRA_REPO: "https://oauth2:${INFRA_REPO_TOKEN}@gitlab.com/${INFRA_REPO_PATH}.git"
-  INFRA_REPO_PATH: "adrianrigo/sem4_work"  # Update this!
+  INFRA_REPO_PATH: "adrianrigo/sem4_work"
 
 unit-test-job:
   stage: test
